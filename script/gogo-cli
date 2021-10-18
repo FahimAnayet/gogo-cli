@@ -154,14 +154,14 @@ get_video_id() {
 	anime_id=$1
 	ep_no=$2
 	URL="$_HOST$anime_id-episode-$ep_no"
-	RESULT=$(python -c 'import webscrap, sys; webscrap.curl(sys.argv[1])' "$URL")
+	RESULT=$(python -c 'from gogo import webscrap; import sys; webscrap.curl(sys.argv[1])' "$URL")
 	echo $RESULT| sed 's/.*sbplay1.com\/e\///; s/">.*//'
 }
 
 get_video_token () {
 	video_id="$1"
 	URL="https://sbplay1.com/d/$video_id"
-	RESULT=$(python -c 'import webscrap, sys; webscrap.curl(sys.argv[1])' "$URL")
+	RESULT=$(python -c 'from gogo import webscrap; import sys; webscrap.curl(sys.argv[1])' "$URL")
 	echo $RESULT | grep "'$video_id','n','" | sed "s/.*'$video_id','n','//;s/').*//"
 }
 get_video_url (){
@@ -272,7 +272,6 @@ open_episode () {
 	video_id=$(get_video_id "$anime_id" "$episode")
 	video_token=$(get_video_token "$video_id")
 	video_url=$(get_video_url "$video_id" "$video_token")
-	echo $video_id $video_token $video_url
 
 if [ $is_download -eq 0 ]; then
 	# write anime and episode number
