@@ -136,31 +136,41 @@ search_eps () {
 		'
 }
 
+#get_video_id() {
+	## get the download page url
+	#anime_id=$1
+	#ep_no=$2
+
+	#curl -s "$_HOST$anime_id-episode-$ep_no" |
+	#sed -n -E '
+		#/^[[:space:]]*<a href="#" rel="13"/{
+		#s/.*embed-([^"]*).html".*/\1/p
+		#q
+		#}'
+#}
+
 get_video_id() {
 	# get the download page url
 	anime_id=$1
 	ep_no=$2
-
-	curl -s "$_HOST$anime_id-episode-$ep_no" |
-	sed -n -E '
-		/^[[:space:]]*<a href="#" rel="13"/{
-		s/.*embed-([^"]*).html".*/\1/p
-		q
-		}'
+	URL="$_HOST$anime_id-episode-$ep_no"
+	RESULT=$(python -c 'import webscrap, sys; webscrap.curl(sys.argv[1])' "$URL")
+	echo $RESULT| sed 's/.*sbplay1.com\/e\///; s/">.*//'
 }
 
 get_video_token () {
 	video_id="$1"
-	curl -s https://sbplay.one/d/$video_id |
-	grep "'$video_id','n','" | sed "s/.*'$video_id','n','//;s/').*//"
+	URL="https://sbplay1.com/d/$video_id"
+	RESULT=$(python -c 'import webscrap, sys; webscrap.curl(sys.argv[1])' "$URL")
+	echo $RESULT | grep "'$video_id','n','" | sed "s/.*'$video_id','n','//;s/').*//"
 }
 get_video_url (){
 	#$1 is video id
 	#$2 is video token
-	resCheck=`curl -s "https://sbplay.one/dl?op=download_orig&id=$1&mode=$_RESOLUTION&hash=$2" |
+	resCheck=`curl -s "https://sbplay1.com/dl?op=download_orig&id=$1&mode=$_RESOLUTION&hash=$2" |
 	sed -n 's/.*href="//;s/4">D.*/4/p'`
 	if [[ -z "$resCheck" ]]; then
-		resCheck=`curl -s "https://sbplay.one/dl?op=download_orig&id=$1&mode=n&hash=$2" |
+		resCheck=`curl -s "https://sbplay1.com/dl?op=download_orig&id=$1&mode=n&hash=$2" |
 		sed -n 's/.*href="//;s/4">D.*/4/p'`
 	fi
 	echo $resCheck
@@ -262,6 +272,7 @@ open_episode () {
 	video_id=$(get_video_id "$anime_id" "$episode")
 	video_token=$(get_video_token "$video_id")
 	video_url=$(get_video_url "$video_id" "$video_token")
+	echo $video_id $video_token $video_url
 
 if [ $is_download -eq 0 ]; then
 	# write anime and episode number
@@ -276,7 +287,7 @@ else
 	# add 0 padding to the episode name
 	episode=$(printf "%03d" $episode)
 	{
-		$_ARIA -d ~/Downloads -x $_THREAD $video_url
+		$_ARIA -d ~/Downloads -x $_THREAD "$video_url"
 	}
 fi
 }
