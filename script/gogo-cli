@@ -63,7 +63,7 @@ _CURL="$(command -v curl)" || prog_not_found "curl"
 _ARIA="$(command -v aria2c)" || prog_not_found "aria2c"
 _SED="$(command -v sed)" || prog_not_found "sed"
 _GREP="$(command -v grep)" || prog_not_found "grep"
-_HOST="https://gogoanime.vc/"
+_HOST="https://gogoanime.wiki/"
 _REFERER_URL="http://streamani.io/"
 _PLAYER="$(command -v iina-cli)" || prog_not_found "iina"
 _RESOLUTION=n
@@ -286,7 +286,7 @@ else
 	# add 0 padding to the episode name
 	episode=$(printf "%03d" $episode)
 	{
-		$_ARIA -d ~/Downloads -x $_THREAD "$video_url"
+		$_ARIA -d ~/Downloads -x $_THREAD -s $_THREAD -k 5M "$video_url"
 	}
 fi
 }
