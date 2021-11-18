@@ -33,7 +33,7 @@ help_text () {
 	done <<-EOF
 		USAGE: $prog <query>
 		-h		show this help text
-		-p		define player, default mpv
+		-p		define player, default $temp
 		-H		continue where you left off
 		-d		download episode(episode will be download in pwd)
 		-r		define resolution -r<h|n|l> high, low or normal. if res not found will fall back to normal
@@ -65,11 +65,11 @@ _SED="$(command -v sed)" || prog_not_found "sed"
 _GREP="$(command -v grep)" || prog_not_found "grep"
 _HOST="https://gogoanime.wiki/"
 _REFERER_URL="http://streamani.io/"
-_PLAYER="$(command -v iina-cli)" || prog_not_found "iina"
+_PLAYER="$(command -v iina)" || prog_not_found "$temp"
 _RESOLUTION=n
 is_download=0
 scrape=query
-
+temp=`echo "$_PLAYER" | sed 's/.*\///'`
 while getopts 'hdHp:r:t:' OPT; do
 	case $OPT in
 		h)
@@ -312,7 +312,7 @@ case $scrape in
 esac
 
 
-{ # checking input
+check_input() { # checking input
 	[ "$ep_choice_start" -eq "$ep_choice_start" ] 2>/dev/null || die "Invalid number entered"
 	episodes=$ep_choice_start
 
@@ -324,21 +324,35 @@ esac
 }
 
 # add anime to history file
+append_history() {
 grep -q -w "${selection_id}" "$logfile" ||
 	printf "%s\t%d\n" "$selection_id" $((episode+1)) >> "$logfile"
-
+}
+open_selection() {
 for ep in $episodes
 do
 	open_episode "$selection_id" "$ep"
 done
 episode=${ep_choice_end:-$ep_choice_start}
+}
+
+check_input
+append_history
+open_selection
 
 while :; do
 	printf "\n${c_green}Currently playing %s episode ${c_cyan}%d/%d\n" "$selection_id" $episode $last_ep_number
-	printf "$c_blue[${c_cyan}%s$c_blue] $c_yellow%s$c_reset\n" "n" "next episode"
-	printf "$c_blue[${c_cyan}%s$c_blue] $c_magenta%s$c_reset\n" "p" "previous episode"
-	printf "$c_blue[${c_cyan}%s$c_blue] $c_yellow%s$c_reset\n" "s" "select episode"
+	if [ "$episode" -ne "$last_ep_number" ]; then
+		printf "$c_blue[${c_cyan}%s$c_blue] $c_yellow%s$c_reset\n" "n" "next episode"
+	fi
+	if [ "$episode" -ne "1" ]; then
+		printf "$c_blue[${c_cyan}%s$c_blue] $c_magenta%s$c_reset\n" "p" "previous episode"
+	fi
+	if [ "$last_ep_number" -ne "1" ]; then
+		printf "$c_blue[${c_cyan}%s$c_blue] $c_yellow%s$c_reset\n" "s" "select episode"
+	fi
 	printf "$c_blue[${c_cyan}%s$c_blue] $c_magenta%s$c_reset\n" "r" "replay current episode"
+	printf "$c_blue[${c_cyan}%s$c_blue] $c_cyan%s$c_reset\n" "a" "search for another anime"
 	printf "$c_blue[${c_cyan}%s$c_blue] $c_red%s$c_reset\n" "q" "exit"
 	printf "${c_blue}Enter choice:${c_green} "
 	read choice
@@ -359,6 +373,18 @@ while :; do
 
 		r)
 			episode=$((episode))
+			;;
+		a)
+			tput reset
+			get_search_query ""
+			search_results=$(search_anime "$query")
+			[ -z "$search_results" ] && die "No search results found"
+			anime_selection "$search_results"
+			episode_selection
+			check_input
+			append_history
+			open_selection
+			continue
 			;;
 
 		q)
