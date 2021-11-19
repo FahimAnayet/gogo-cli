@@ -88,7 +88,7 @@ while getopts 'hdHp:r:t:' OPT; do
 			;;
 		r)
 			_RESOLUTION="$OPTARG"
-			if [[ ! "$_RESOLUTION" = "h" && ! "$_RESOLUTION" = "n" && ! "$_RESOLUTION" = "l" ]]; then
+			if [[ ! "$_RESOLUTION" = "h" &&  ! "$_RESOLUTION" = "360" && ! "$_RESOLUTION" = "480" && ! "$_RESOLUTION" = "720" && ! "$_RESOLUTION" = "1080" && ! "$_RESOLUTION" = "l" ]]; then
 				printf "$c_magenta%s$c_reset\n" "-r <h|l|360|480|720|1080>: Resolution must be hi, low, or pixel"
 				exit
 			fi
@@ -149,10 +149,10 @@ get_video_id() {
 		}'
 }
 
-get_video_token () {
+get_video_res () {
 	video_id="$1"
-	video_token="$2"
-	video_file=$(curl -s --referer "$video_id" "$video_token")
+	video_res="$2"
+	video_file=$(curl -s --referer "$video_id" "$video_res")
 	available_qualities=$(printf '%s' "$video_file" | sed -n -E 's/.*NAME="([^p]*)p"/\1/p')
 	case $_RESOLUTION in
 		h)
@@ -177,9 +177,7 @@ get_video_token () {
 }
 get_video_url (){
 	#$1 is video id
-	#$2 is video token
-	embedded_video_url="$1"
-	video_url=$(curl -s "$embedded_video_url" |
+	video_url=$(curl -s "$1" |
 	sed -n -E '
 		/^[[:space:]]*sources:/{
 		s/.*(https[^'\'']*).*/\1/p
@@ -187,10 +185,34 @@ get_video_url (){
 		}
 		')
 
-	video_quality=$(get_video_token "$embedded_video_url" "$video_url")
+	video_quality=$(get_video_res "$1" "$video_url")
 
 	# Replace the video with highest quality video
 	printf '%s' "$video_url" | sed -n -E "s/(.*)\.m3u8/\1.$video_quality.m3u8/p"
+}
+
+get_download_id() {
+	# get the download page id
+	anime_id=$1
+	ep_no=$2
+	URL="$_HOST$anime_id-episode-$ep_no"
+	RESULT=$(python -c 'from gogo import webscrap; import sys; webscrap.curl(sys.argv[1])' "$URL")
+	printf '%s' "$RESULT" | grep "&typesub=Gogo" | sed -n 's/.*?id=//; s/&type.*//p'
+}
+
+get_download_url(){
+	#$1 is download id
+	URL="https://gogoplay1.com/download?id=$1"
+	RESULT=$(python -c 'from gogo import webscrap; import sys; webscrap.curl(sys.argv[1])' "$URL")
+	if [[ $_RESOLUTION == 'h' ]]; then
+			printf '%s' "$RESULT" | grep "gogo-cdn.com" | sed 's/href="//; s/" download.*//' | tail -n 1
+	elif [[ $_RESOLUTION == 'l' ]]; then
+			printf '%s' "$RESULT" | grep "gogo-cdn.com" | sed 's/href="//; s/" download.*//' | head -n 1
+	elif [[ "$RESULT" == *"$_RESOLUTION"* ]]; then
+			printf '%s' "$RESULT" | grep -B 1 "${_RESOLUTION}P" | head -n 1 | sed 's/" download.*//'
+	else
+			printf '%s' "$RESULT" | grep "gogo-cdn.com" | sed 's/href="//; s/" download.*//' | tail -n 1
+	fi
 }
 
 
@@ -287,8 +309,7 @@ open_episode () {
 	printf "Getting data for episode %d\n" $episode
 
 	video_id=$(get_video_id "$anime_id" "$episode")
-	video_token=$(get_video_token "$video_id")
-	video_url=$(get_video_url "$video_id" "$video_token")
+	video_url=$(get_video_url "$video_id")
 
 if [ $is_download -eq 0 ]; then
 	# write anime and episode number
@@ -299,11 +320,13 @@ if [ $is_download -eq 0 ]; then
 	$_PLAYER "$video_url"
 else
 	printf "Downloading episode $episode ...\n"
+	download_id=$(get_download_id "$anime_id" "$episode")
+	download_url=$(get_download_url "$download_id")
 	# add 0 padding to the episode name
 	episode=$(printf "%03d" $episode)
 	{
-		#$_ARIA -x $_THREAD -s $_THREAD -k 5M --referer=$video_id "$video_url"
-		#$_HLS -u "$video_url" -H Referer: "$video_token" -n $_THREAD -o "${anime_id}-${episode}.mp4"
+		$_ARIA -x $_THREAD -s $_THREAD -k 5M --referer=$video_id "$download_url"
+		#$_HLS -u "$video_url" -H Referer: "$video_res" -n $_THREAD -o "${anime_id}-${episode}.mp4"
 	}
 fi
 }
