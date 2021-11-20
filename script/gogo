@@ -67,6 +67,7 @@ _HOST="https://gogoanime.wiki/"
 _REFERER_URL="http://streamani.io/"
 _PLAYER="$(command -v iina)" || prog_not_found "$temp"
 _RESOLUTION=h
+_THREAD=8
 is_download=0
 scrape=query
 temp=`echo "$_PLAYER" | sed 's/.*\///'`
