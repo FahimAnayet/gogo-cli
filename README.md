@@ -1,5 +1,5 @@
 # I will write readme later
-## hls branch is more faster and more flexible in resolution, but currently doesn't support vlc.
+## hls branch is more faster and more flexible in resolution, but currently only support mpv and iina (NO VLC OR POT GUYS).
 # **Requirements:**
 
 - 1. Python3 installed
