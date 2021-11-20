@@ -323,6 +323,7 @@ open_episode () {
 		else
 			$_PLAYER --mpv-http-header-fields="Referer:$video_id" $video_url
 		fi
+		#future vlc --http-referrer='$video_id' '$video_url'
 	else
 		printf "Downloading episode $episode ...\n"
 		download_id=$(get_download_id "$anime_id" "$episode")
