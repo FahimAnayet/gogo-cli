@@ -1,5 +1,5 @@
 # I will write readme later
-
+## hls branch is more faster and more flexible in resolution, but currently doesn't support vlc.
 # **Requirements:**
 
 - 1. Python3 installed
@@ -12,3 +12,6 @@
 - 2. cd into the cloned folder.
 - 3. run `pip install .`
 - 4. youre good to go. now open terminal and type `gogo-cli` press enter and see magic 😌
+
+
+#### So many codes and ideas taken shamelessly from [ani-cli](https://github.com/pystardust/ani-cli)
