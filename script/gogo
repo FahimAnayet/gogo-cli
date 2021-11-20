@@ -325,7 +325,7 @@ open_episode () {
 		# add 0 padding to the episode name
 		episode=$(printf "%03d" $episode)
 		{
-			aria2c -x $_THREAD -s $_THREAD -k 5M --referer=$video_id $download_url
+			aria2c -x $_THREAD -s $_THREAD -k 5M --referer=$video_id $download_url -o "${anime_id}-${episode}.mp4"
 			#$_HLS -u "$video_url" -H Referer: "$video_res" -n $_THREAD -o "${anime_id}-${episode}.mp4"
 		}
 	fi
