@@ -11,4 +11,4 @@
 - 1. clone the repo.
 - 2. cd into the cloned folder.
 - 3. run `pip install .`
-- 4. youre good to go. now open terminal and type `gogo-cli` press enter and see magic 😌
+- 4. youre good to go. now open terminal and type `gogo` press enter and see magic 😌
