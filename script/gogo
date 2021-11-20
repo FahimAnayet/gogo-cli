@@ -318,7 +318,11 @@ open_episode () {
 		s/^${selection_id}\t[0-9]+/${selection_id}\t$((episode+1))/
 		" "$logfile" > "${logfile}.new" && mv "${logfile}.new" "$logfile"
 
-		$_PLAYER --http-header-fields="Referer:$video_id" $video_url
+		if [[ $_PLAYER == 'mpv' ]]; then
+			$_PLAYER --http-header-fields="Referer:$video_id" $video_url
+		else
+			$_PLAYER --mpv-http-header-fields="Referer:$video_id" $video_url
+		fi
 	else
 		printf "Downloading episode $episode ...\n"
 		download_id=$(get_download_id "$anime_id" "$episode")
