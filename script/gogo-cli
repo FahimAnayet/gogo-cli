@@ -225,7 +225,7 @@ anime_selection () {
 	count=1
 	while read anime_id; do
 		if [ $count -eq $choice ]; then
-			selection_id=$anime_id
+			selection_id=$(echo $anime_id | awk '{print $1}')
 			break
 		fi
 		count=$((count+1))
@@ -275,11 +275,8 @@ open_episode () {
 
 if [ $is_download -eq 0 ]; then
 	# write anime and episode number
-	sed -E "
-	s/^${selection_id}\t[0-9]+/${selection_id}\t$((episode+1))/
-	" "$logfile" > "${logfile}.new" && mv "${logfile}.new" "$logfile"
-
 	$_PLAYER "$video_url"
+	append_history "$selection_id" "$episode"
 else
 	printf "Downloading episode $episode ...\n"
 	printf "%s\n" "$video_url"
@@ -304,10 +301,15 @@ case $scrape in
 		episode_selection
 		;;
 	history)
-		search_results=$(sed -n -E 's/\t[0-9]*//p' "$logfile")
+		search_results=$(awk NF=1 "$logfile")
 		[ -z "$search_results" ] && die "History is empty"
 		anime_selection "$search_results"
-		ep_choice_start=$(sed -n -E "s/${selection_id}\t//p" "$logfile")
+		ep_choice_start=$(grep "$selection_id" $logfile | awk '{print $NF}')
+		read last_ep_number <<-EOF
+		$(search_eps "$selection_id")
+		EOF
+		read $ep_choice_start $last_ep_number
+		printf "$c_reset"
 		;;
 esac
 
@@ -325,8 +327,8 @@ check_input() { # checking input
 
 # add anime to history file
 append_history() {
-grep -q -w "${selection_id}" "$logfile" ||
-	printf "%s\t%d\n" "$selection_id" $((episode+1)) >> "$logfile"
+	sed "/$selection_id ep/d" $logfile > tmpfile && mv tmpfile $logfile;
+	printf "%s ep\t%d\n" "$selection_id" $2 >> "$logfile"
 }
 open_selection() {
 for ep in $episodes
