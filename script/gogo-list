@@ -311,7 +311,7 @@ case $scrape in
 		search_results=$("$_FZF" < "$logfile")
 		[ -z "$search_results" ] && die "History is empty"
 		selection_id=$(echo "$search_results" | awk '{print $1}')
-		ep_choice_start=$(echo "$search_results" | awk '{print $2}')
+		ep_choice_start=$(echo "$search_results" | awk '{print $NF}')
 		read last_ep_number <<-EOF
 		$(search_eps "$selection_id")
 		EOF
