@@ -277,14 +277,12 @@ open_episode () {
 
 	if [ $is_download -eq 0 ]; then
 		# write anime and episode number
-		sed -E "
-		s/^${selection_id}\t[0-9]+/${selection_id}\t$((episode+1))/
-		" "$logfile" > "${logfile}.new" && mv "${logfile}.new" "$logfile"
-
 		if [[ $_PLAYER == 'mpv' ]]; then
 			$_PLAYER --http-header-fields="Referer:$video_id" $video_url
+			append_history "$selection_id" "$episode"
 		else
 			$_PLAYER --mpv-http-header-fields="Referer:$video_id" $video_url
+			append_history "$selection_id" "$episode"
 		fi
 	else
 		printf "Downloading episode $episode ...\n"
@@ -339,8 +337,8 @@ check_input() { # checking input
 
 # add anime to history file
 append_history() {
-	grep -q -w "${selection_id}" "$logfile" ||
-		printf "%s\t%d\n" "$selection_id" $((episode+1)) >> "$logfile"
+	sed "/$selection_id ep/d" $logfile > tmpfile && mv tmpfile $logfile;
+	printf "%s ep\t%d\n" "$selection_id" $2 >> "$logfile"
 	}
 open_selection() {
 	for ep in $episodes
