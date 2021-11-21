@@ -60,7 +60,7 @@ prog_not_found(){
 }
 # option parsing
 _CURL="$(command -v curl)" || prog_not_found "curl"
-_HLS="$(command -v hls)" || prog_not_found "hls"
+_ARIA="$(command -v aria2c)" || prog_not_found "aria2c"
 _SED="$(command -v sed)" || prog_not_found "sed"
 _GREP="$(command -v grep)" || prog_not_found "grep"
 _HOST="https://gogoanime.wiki/"
