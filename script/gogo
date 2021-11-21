@@ -36,7 +36,7 @@ help_text () {
 		-p		define player, default $temp
 		-H		continue where you left off
 		-d		download episode(episode will be download in pwd)
-		-r		define resolution -r<h|n|l> high, low or normal. if res not found will fall back to normal
+		-r		define resolution -r <h|l|360|480|720|1080> high, low or normal. if res not found will fall back to normal
 		-t		threads by default 8, don't use more than 16
 	EOF
 }
