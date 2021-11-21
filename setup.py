@@ -7,6 +7,6 @@ setup(
     url='fahimanayet.github.io/Portfolio',
     packages=['gogo'],
     scripts=[
-        'script/gogo'
+        'script/gogo-list'
     ],
 )
