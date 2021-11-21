@@ -1,5 +1,7 @@
 # I will write readme later
 
+> [main](https://github.com/FahimAnayet/gogo-cli) branch is slower but supports all players, Download speed is same for every branches, Also check [fzfversion](https://github.com/FahimAnayet/gogo-cli/tree/fzfversion), this is fastest when searching anime(ONLY MPV and IINA).
+
 # **Requirements:**
 
 - 1. Python3 installed
