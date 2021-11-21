@@ -1,5 +1,5 @@
 # I will write readme later
-## hls branch is more faster and more flexible in resolution, but currently only support mpv and iina (NO VLC OR POT GUYS).
+## hls branch is more faster and more flexible in resolution, but currently only support mpv and iina (NO VLC OR POT GUYS). Also check fzfversion. fzfversion is fastest when searching anime(ONLY MPV and IINA).
 # **Requirements:**
 
 - 1. Python3 installed
