@@ -1,5 +1,5 @@
 # I will write readme later
-
+> Checkout [hls](https://github.com/FahimAnayet/gogo-cli/tree/hls) supports only iina and mpv, [main](https://github.com/FahimAnayet/gogo-cli) supports all players.
 # **Requirements:**
 
 - 1. Python3 installed
