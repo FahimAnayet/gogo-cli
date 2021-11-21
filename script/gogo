@@ -320,11 +320,8 @@ open_episode () {
 
 		if [[ $_PLAYER == 'mpv' ]]; then
 			$_PLAYER --http-header-fields="Referer:$video_id" $video_url
-		elif [[ $_PLAYER == 'iina' ]]; then
+		else
 			$_PLAYER --mpv-http-header-fields="Referer:$video_id" $video_url
-		elif [[ $_PLAYER == 'vlc' ]]; then
-			#$_PLAYER --http-referrer="$video_id" "$video_url"
-			echo "currenlty vlc is not supported"
 		fi
 	else
 		printf "Downloading episode $episode ...\n"
