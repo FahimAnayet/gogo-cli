@@ -64,7 +64,6 @@ _ARIA="$(command -v aria2c)" || prog_not_found "aria2c"
 _SED="$(command -v sed)" || prog_not_found "sed"
 _GREP="$(command -v grep)" || prog_not_found "grep"
 _HOST="https://gogoanime.wiki/"
-_REFERER_URL="http://streamani.io/"
 _PLAYER="$(command -v iina)" || prog_not_found "$temp"
 _RESOLUTION=h
 _THREAD=8
