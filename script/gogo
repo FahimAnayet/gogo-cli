@@ -141,17 +141,17 @@ get_video_id() {
 	anime_id=$1
 	ep_no=$2
 	$_CURL -s "$_HOST$anime_id-episode-$ep_no" |
-		sed -n -E '
-								/^[[:space:]]*<a href="#" rel="100"/{
-								s/.*data-video="([^"]*)".*/https:\1/p
-								q
-							}'
+	sed -n -E '
+		/^[[:space:]]*<a href="#" rel="100"/{
+		s/.*data-video="([^"]*)".*/https:\1/p
+		q
+		}'
 					}
 
 get_video_res () {
 	video_id="$1"
-	video_res="$2"
-	video_file=$(curl -s --referer "$video_id" "$video_res")
+	video_url="$2"
+	video_file=$(curl -s --referer "$video_id" "$video_url")
 	available_qualities=$(printf '%s' "$video_file" | sed -n -E 's/.*NAME="([^p]*)p"/\1/p')
 	case $_RESOLUTION in
 		h)
@@ -184,7 +184,9 @@ get_video_url (){
 	video_quality=$(get_video_res "$1" "$video_url")
 
 	# Replace the video with highest quality video
-	printf '%s' "$video_url" | sed -n -E "s/(.*)\.360\.m3u8|\.480\.m3u8|\.720\.m3u8|\.1080\.m3u8|\.m3u8/\1.$video_quality.m3u8/p"
+		printf '%s' "$video_url" | sed -n -E "s/(.*)\.m3u8/\1.$video_quality.m3u8/p"
+
+	#printf '%s' "$video_url" | sed -n -E "s/(.*)\.360\.m3u8|\.480\.m3u8|\.720\.m3u8|\.1080\.m3u8|\.m3u8/\1.$video_quality.m3u8/p"
 }
 
 get_download_id() {
