@@ -298,9 +298,9 @@ open_episode () {
 		download_url=$(get_download_url "$download_id")
 		# add 0 padding to the episode name
 		episode=$(printf "%03d" $episode)
-		{
-			aria2c -x $_THREAD -s $_THREAD -k 5M --referer=$video_id $download_url -o "${anime_id}-${episode}.mp4"
-		}
+		
+		aria2c -x $_THREAD -s $_THREAD -k 5M --referer=$video_id $download_url -o "${anime_id}-${episode}.mp4"
+	
 	fi
 }
 
