@@ -1,4 +1,4 @@
-# I will write readme later
+# Deprecated
 > [hls](https://github.com/FahimAnayet/gogo-cli/tree/hls) branch is more faster and more flexible in resolution, but currently only support mpv and iina (NO VLC OR POT GUYS). Also check fzfversion. [fzfversion](https://github.com/FahimAnayet/gogo-cli/tree/fzfversion) is fastest when searching anime(ONLY MPV and IINA).
 # **Requirements:**
 
